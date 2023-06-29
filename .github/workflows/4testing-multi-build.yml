@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         platform: [linux/amd64]
-    concurrency: ${{github.head_ref}}
+    concurrency: build
     steps:
       - name: Checkout
         uses: actions/checkout@v3
