@@ -1,6 +1,9 @@
 name: 4testing multiarch-build
 
-on: [push]
+on:
+  push:
+    branches: 
+      - 'feature/test-tag'
 env:
     DOCKER_PATH: "/build/install/docker"
     REPO: "onlyoffice"
