@@ -5,6 +5,7 @@ on:
     branches: 
       - 'feature/test-tag'
 env:
+    DATE: ""
     DOCKER_PATH: "/build/install/docker"
     REPO: "lemmav"
     DOCKERFILE: "Dockerfile.app"
@@ -40,5 +41,14 @@ jobs:
           --set *.args.GIT_BRANCH=$GITHUB_REF_NAME \
           --set *.platform=linux/amd64 \
           --push
+          
+          TAG=$(date "+%Y%m%d%H")
+          DOCKER_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_IMAGES=$(docker images --format "{{.Repository}}:{{.Tag}}")
+          for IMAGE in $DOCKER_IMAGES; do
+            NEW_IMAGE=$IMAGE-$TAG
+            docker tag $IMAGE $NEW_IMAGE
+            docker push $NEW_IMAGE
+          done
 
         shell: bash
