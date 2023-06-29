@@ -6,7 +6,7 @@ on:
       - 'feature/test-tag'
 env:
     DOCKER_PATH: "/build/install/docker"
-    REPO: "onlyoffice"
+    REPO: "lemmav"
     DOCKERFILE: "Dockerfile.app"
 
 jobs:
