@@ -55,7 +55,8 @@ jobs:
           
           MY_DOCKER_IMAGES=$(echo "$DOCKER_IMAGES" | grep "$REPO" | tr '\n' ' ')
           echo "MY_DOCKER_IMAGES=$MY_DOCKER_IMAGES"
-          for IMAGE in "$MY_DOCKER_IMAGES"; do
+          IFS=" " read -a MYARRAY <<< "$MY_DOCKER_IMAGES"
+          for IMAGE in ${MYARRAY[@]}; do
 
             echo "NEW_IMAGE for taggig"
             NEW_IMAGE="$IMAGE"-"$TAG"
