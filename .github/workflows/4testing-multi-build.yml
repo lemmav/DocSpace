@@ -52,8 +52,8 @@ jobs:
 
           echo "DOCKER_IMAGES=$DOCKER_IMAGES"
 
-          IFS=$'\r\n'
-          MY_DOCKER_IMAGES=$(echo "$DOCKER_IMAGES" | grep "$REPO")
+          
+          MY_DOCKER_IMAGES=$(echo "$DOCKER_IMAGES" | grep "$REPO" | tr '\n' ' ')
           echo "MY_DOCKER_IMAGES=$MY_DOCKER_IMAGES"
           for IMAGE in "$MY_DOCKER_IMAGES"; do
 
