@@ -54,7 +54,7 @@ jobs:
           echo "DOCKER_IMAGES=$DOCKER_IMAGES"
 
           MY_DOCKER_IMAGES=$(echo $DOCKER_IMAGES | grep $REPO)
-
+          echo "MY_DOCKER_IMAGES=$MY_DOCKER_IMAGES"
           for IMAGE in $MY_DOCKER_IMAGES; do
 
             echo "NEW_IMAGE for taggig"
