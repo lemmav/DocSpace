@@ -42,9 +42,10 @@ jobs:
           --set *.platform=linux/amd64 \
           --push
           
-          TAG=$(date "+%Y%m%d%H")
+
           DOCKER_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKER_IMAGES=$(docker images --format "{{.Repository}}:{{.Tag}}")
+          DOCKER_IMAGES=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep $REPO)
+
           for IMAGE in $DOCKER_IMAGES; do
             NEW_IMAGE=$IMAGE-$TAG
             docker tag $IMAGE $NEW_IMAGE
