@@ -40,7 +40,7 @@ jobs:
           docker buildx bake -f build.yml \
           --set *.args.GIT_BRANCH=$GITHUB_REF_NAME \
           --set *.platform=linux/amd64 \
-          --push
+          --load
           
           TAG=$(date "+%Y%m%d%H")
       
@@ -60,6 +60,7 @@ jobs:
             echo "NEW_IMAGE for taggig"
             NEW_IMAGE=$IMAGE-$TAG
 
+            docker push $IMAGE
             echo "docker tag for taggig"
             docker tag $IMAGE $NEW_IMAGE
 
