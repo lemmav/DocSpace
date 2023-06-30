@@ -43,14 +43,19 @@ jobs:
           --push
           
           TAG=$(date "+%Y%m%d%H")
-          echo "DOCKER_USERNAME for taggig"
-          DOCKER_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+      
 
           echo "DOCKER_IMAGES for taggig"
-          DOCKER_IMAGES=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep $REPO)
 
-          echo "for IMAGE for taggig"
-          for IMAGE in $DOCKER_IMAGES; do
+          DOCKER_IMAGES=$(docker images --format "{{.Repository}}:{{.Tag}}")
+
+          echo "Finished DOCKER_IMAGES"
+
+          echo "DOCKER_IMAGES=$DOCKER_IMAGES"
+
+          MY_DOCKER_IMAGES=$(echo $DOCKER_IMAGES | grep $REPO)
+
+          for $IMAGE in $MY_DOCKER_IMAGES; do
 
             echo "NEW_IMAGE for taggig"
             NEW_IMAGE=$IMAGE-$TAG
