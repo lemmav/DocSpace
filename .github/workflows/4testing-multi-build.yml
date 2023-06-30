@@ -39,8 +39,7 @@ jobs:
           
           docker buildx bake -f build.yml \
           --set *.args.GIT_BRANCH=$GITHUB_REF_NAME \
-          --set *.platform=linux/amd64 \
-          --set=*.output=type=image
+          --set *.platform=linux/amd64
           
           TAG=$(date "+%Y%m%d%H")
       
