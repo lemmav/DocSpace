@@ -42,6 +42,7 @@ jobs:
           --set *.platform=linux/amd64 \
           --push
           
+          TAG=$(date "+%Y%m%d%H")
           echo "DOCKER_USERNAME for taggig"
           DOCKER_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
 
