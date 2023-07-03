@@ -3,9 +3,8 @@ name: 4testing multiarch-build
 on:
   push:
     branches: 
-      - 'feature/test-tag'
+      - 'feature/docker-extra-tag'
 env:
-    DATE: ""
     DOCKER_PATH: "/build/install/docker"
     REPO: "lemmav"
     DOCKERFILE: "Dockerfile.app"
@@ -30,33 +29,27 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: Build 4testing
         run: |
           cd .${DOCKER_PATH}
-          
+          TAG=$(date "+%Y%m%d%H")
           export DOCKER_TAG=$(echo "${GITHUB_REF_NAME}" | sed '/^release\b\|^hotfix\b\|^feature\b/s/release.*\/\|hotfix.*\/\|feature.*\///')
           
           docker buildx bake -f build.yml \
           --set *.args.GIT_BRANCH=$GITHUB_REF_NAME \
           --set *.platform=linux/amd64 \
           --load
-          TAG=$(date "+%Y%m%d%H")
-      
 
+      
           echo "DOCKER_IMAGES for taggig"
 
-          DOCKER_IMAGES=$(docker images --format "{{.Repository}}:{{.Tag}}")
+          DOCKER_IMAGES=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep "$REPO" | tr '\n' ' ')
 
           echo "Finished DOCKER_IMAGES"
 
           echo "DOCKER_IMAGES=$DOCKER_IMAGES"
-
-          
-          MY_DOCKER_IMAGES=$(echo "$DOCKER_IMAGES" | grep "$REPO" | tr '\n' ' ')
-          echo "MY_DOCKER_IMAGES=$MY_DOCKER_IMAGES"
-          IFS=" " read -a MYARRAY <<< "$MY_DOCKER_IMAGES"
-          for IMAGE in ${MYARRAY[@]}; do
+          IFS=" " read -a IMAGES <<< "$DOCKER_IMAGES"
+          for IMAGE in ${IMAGES[@]}; do
 
             echo "NEW_IMAGE for taggig"
             NEW_IMAGE="$IMAGE"-"$TAG"
