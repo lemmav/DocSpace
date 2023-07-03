@@ -3,8 +3,8 @@ name: 4testing multiarch-build
 on:
   push:
     branches: 
-      - 'feature/docker-extra-tag'
-      
+      - 'feature/test-tag'
+
 env:
     DOCKER_PATH: "/build/install/docker"
     REPO: "lemmav"
