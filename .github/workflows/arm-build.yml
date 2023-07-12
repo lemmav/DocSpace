@@ -30,6 +30,6 @@ jobs:
       - name: Build 4testing
         run: |
           cd .${DOCKER_PATH}
-          docker buildx build --platform=linux/arm64 -t ffmpeg -f Dockerfile.arm .
+          docker buildx build --platform=linux/arm64 --load -t ffmpeg -f Dockerfile.arm .
           
         shell: bash
