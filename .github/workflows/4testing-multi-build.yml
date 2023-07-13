@@ -10,6 +10,8 @@ env:
     REPO: "lemmav"
     DOCKERFILE: "Dockerfile.app"
     FILE: "build.yml"
+    STATUS: ""
+    DOCKER_IMAGE_PREFIX: ${STATUS}docspace
 
 jobs:
   build:
