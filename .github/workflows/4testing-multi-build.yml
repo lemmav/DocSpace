@@ -8,10 +8,10 @@ on:
 env:
     DOCKER_PATH: "/build/install/docker"
     REPO: "lemmav"
+    DOCKER_IMAGE_PREFIX: "4testing-docspace"
     DOCKERFILE: "Dockerfile.app"
     FILE: "build.yml"
     STATUS: ""
-    DOCKER_IMAGE_PREFIX: "docspace"
 
 jobs:
   build:
