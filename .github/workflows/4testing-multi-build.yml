@@ -36,7 +36,7 @@ jobs:
         run: |
           cd .${DOCKER_PATH}
           TAG=${{github.run_number}}
-          source /build/install/docker/.env
+          source ${DOCKER_PATH}/.env
           export DOCKER_TAG=$(echo "${GITHUB_REF_NAME}" | sed '/^release\b\|^hotfix\b\|^feature\b/s/release.*\/\|hotfix.*\/\|feature.*\///')
           
           docker buildx bake -f build.yml \
