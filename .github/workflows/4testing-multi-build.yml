@@ -11,7 +11,7 @@ env:
     DOCKERFILE: "Dockerfile.app"
     FILE: "build.yml"
     STATUS: ""
-    DOCKER_IMAGE_PREFIX: ${{ env.STATUS }}docspace
+    DOCKER_IMAGE_PREFIX: "docspace"
 
 jobs:
   build:
