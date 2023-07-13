@@ -9,6 +9,7 @@ env:
     DOCKER_PATH: "/build/install/docker"
     REPO: "lemmav"
     DOCKERFILE: "Dockerfile.app"
+    FILE: "build.yml"
 
 jobs:
   build:
@@ -47,7 +48,7 @@ jobs:
       
           echo "DOCKER_IMAGES for taggig"
           
-          DOCKER_IMAGES=$(grep -oP '(?<=image: ")[^"]+' $DEP_FILE | sed -e "s/\${REPO}/$REPO/g ;  s/\${DOCKER_IMAGE_PREFIX}/$DOCKER_IMAGE_PREFIX/g ; s/\${DOCKER_TAG}/$DOCKER_TAG/g" |  tr '\n' ' ' )
+          DOCKER_IMAGES=$(grep -oP '(?<=image: ")[^"]+' $FILE | sed -e "s/\${REPO}/$REPO/g ;  s/\${DOCKER_IMAGE_PREFIX}/$DOCKER_IMAGE_PREFIX/g ; s/\${DOCKER_TAG}/$DOCKER_TAG/g" |  tr '\n' ' ' )
 
           echo "Finished DOCKER_IMAGES"
 
