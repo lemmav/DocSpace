@@ -42,12 +42,12 @@ jobs:
           --set *.platform=linux/amd64 \
           --set *.cache-to=type=gha \
           --set *.cache-from=type=gha \
-          --load
+          --push
 
       
           echo "DOCKER_IMAGES for taggig"
-
-          DOCKER_IMAGES=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep "$REPO" | tr '\n' ' ')
+          
+          DOCKER_IMAGES=$(grep -oP '(?<=image: ")[^"]+' $DEP_FILE | sed -e "s/\${REPO}/$REPO/g" ;  "s/\${DOCKER_IMAGE_PREFIX}/$DOCKER_IMAGE_PREFIX/g" ; "s/\${DOCKER_TAG}/$DOCKER_TAG/g" |  tr '\n' ' ' )
 
           echo "Finished DOCKER_IMAGES"
 
@@ -56,9 +56,10 @@ jobs:
           for IMAGE in ${IMAGES[@]}; do
 
             echo "NEW_IMAGE for taggig"
-            NEW_IMAGE="$IMAGE"-"$TAG"
+            NEW_IMAGE="$IMAGE"."$TAG"
             echo "NEW_IMAGE=$NEW_IMAGE"
-            docker push "$IMAGE"
+            docker pull "$IMAGE"
+            
             echo "docker tag for taggig"
             docker tag "$IMAGE" "$NEW_IMAGE"
 

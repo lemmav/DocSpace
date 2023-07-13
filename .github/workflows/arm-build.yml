@@ -3,7 +3,7 @@ name: arm-build
 on:
   push:
     branches: 
-      - 'feature/test-tag'
+      - 'feature/test-tags'
 
 env:
     DOCKER_PATH: "/build/install/docker"
