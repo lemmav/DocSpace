@@ -138,17 +138,24 @@ saveFilePath = filePath
 filePath = "/app/onlyoffice/config/appsettings.json"
 jsonData = openJsonFile(filePath)
 #jsonUpdateValue = parseJsonValue(jsonValue)
-updateJsonData(jsonData,"$.ConnectionStrings.default.connectionString", "Server="+ MYSQL_HOST +";Port=3306;Database="+ MYSQL_DATABASE +";User ID="+ MYSQL_USER +";Password="+ MYSQL_PASSWORD +";Pooling=true;Character Set=utf8;AutoEnlist=false;SSL Mode=none;ConnectionReset=false",)
-updateJsonData(jsonData,"$.core.base-domain", APP_CORE_BASE_DOMAIN)
-updateJsonData(jsonData,"$.core.machinekey", APP_CORE_MACHINEKEY)
-updateJsonData(jsonData,"$.core.products.subfolder", "server")
-updateJsonData(jsonData,"$.core.notify.postman", "services")
-updateJsonData(jsonData,"$.web.hub.internal", "http://onlyoffice-socket:" + SERVICE_PORT + "/")
-updateJsonData(jsonData,"$.files.docservice.url.portal", APP_URL_PORTAL)
-updateJsonData(jsonData,"$.files.docservice.url.public", DOCUMENT_SERVER_URL_PUBLIC)
-updateJsonData(jsonData,"$.files.docservice.url.internal", DOCUMENT_SERVER_URL_INTERNAL)
-updateJsonData(jsonData,"$.files.docservice.secret.value", DOCUMENT_SERVER_JWT_SECRET)
-updateJsonData(jsonData,"$.files.docservice.secret.header", DOCUMENT_SERVER_JWT_HEADER)
+
+
+parametrsForUpdate = {
+"$.ConnectionStrings.default.connectionString": "Server="+MYSQL_HOST+";Port=3306;Database="+MYSQL_DATABASE+";User ID="+MYSQL_USER+";Password="+MYSQL_PASSWORD+";Pooling=true;Character Set=utf8;AutoEnlist=false;SSL Mode=none;ConnectionReset=false",
+"$.core.base-domain": APP_CORE_BASE_DOMAIN,
+"$.core.machinekey": APP_CORE_MACHINEKEY,
+"$.core.products.subfolder": "server",
+"$.core.notify.postman": "services",
+"$.web.hub.internal": "http://onlyoffice-socket:"+SERVICE_PORT+"/",
+"$.files.docservice.url.portal": APP_URL_PORTAL,
+"$.files.docservice.url.public": DOCUMENT_SERVER_URL_PUBLIC,
+"$.files.docservice.url.internal": DOCUMENT_SERVER_URL_INTERNAL,
+"$.files.docservice.secret.value":  DOCUMENT_SERVER_JWT_SECRET,
+"$.files.docservice.secret.header": DOCUMENT_SERVER_JWT_HEADER}
+
+for key, value in parametrsForUpdate.items():
+    updateJsonData(key, value)
+
 if INSTALLATION_TYPE == "ENTERPRISE":
     updateJsonData(jsonData, "$.license.file.path", "/app/onlyoffice/data/license.lic")
 
