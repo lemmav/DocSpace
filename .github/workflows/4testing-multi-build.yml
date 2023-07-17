@@ -37,16 +37,7 @@ jobs:
         run: |
           cd .${DOCKER_PATH}
           TAG=${{github.run_number}}
-          export DOCKER_TAG=$(echo "${GITHUB_REF_NAME}" | sed '/^release\b\|^hotfix\b\|^feature\b/s/release.*\/\|hotfix.*\/\|feature.*\///')
-
-          docker buildx bake -f build.yml \
-          --set *.args.GIT_BRANCH=$GITHUB_REF_NAME \
-          --set *.platform=linux/amd64 \
-          --set *.cache-to=type=gha \
-          --set *.cache-from=type=gha \
-          --push
-
-          export DOCKER_TAG=$DOCKER_TAG.$TAG
+          export DOCKER_TAG=$(echo "${GITHUB_REF_NAME}" | sed '/^release\b\|^hotfix\b\|^feature\b/s/release.*\/\|hotfix.*\/\|feature.*\///').$TAG
 
           docker buildx bake -f build.yml \
           --set *.args.GIT_BRANCH=$GITHUB_REF_NAME \
