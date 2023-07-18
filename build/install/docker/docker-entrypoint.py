@@ -45,8 +45,14 @@ def main():
 
     KAFKA_HOST = os.environ["KAFKA_HOST"] if environ.get("KAFKA_HOST") else "kafka:9092"
     RUN_FILE = sys.argv[2] if (len(sys.argv) > 2) else "none"
+    print("RUN_FILE")
+    print(RUN_FILE)
     LOG_FILE = sys.argv[3] if (len(sys.argv) > 3) else "none"
+    print("LOG_FILE")
+    print(LOG_FILE)
     CORE_EVENT_BUS = sys.argv[4] if (len(sys.argv) > 4) else ""
+    print("LOG_FILE")
+    print(CORE_EVENT_BUS)
 
     REDIS_HOST = os.environ["REDIS_HOST"] if environ.get("REDIS_HOST") else "onlyoffice-redis"
     REDIS_PORT = os.environ["REDIS_PORT"] if environ.get("REDIS_PORT") else "6379"
@@ -68,6 +74,7 @@ def main():
             self.PATH_TO_CONF = PATH_TO_CONF
         @dispatch(str)    
         def RunService(self, RUN_FILE):
+            print("Running node 1")
             os.system("node " + RUN_FILE + " --app.port=" + self.SERVICE_PORT +\
                 " --app.appsettings=" + self.PATH_TO_CONF)
             return 1
@@ -76,6 +83,7 @@ def main():
         def RunService(self, RUN_FILE, ENV_EXTENSION):
             if ENV_EXTENSION == "none":
                 self.RunService(RUN_FILE)
+            print("Running node 2")
             os.system("node " + RUN_FILE + " --app.port=" + self.SERVICE_PORT +\
                 " --app.appsettings=" + self.PATH_TO_CONF +\
                     " --app.environment=" + ENV_EXTENSION)
@@ -87,6 +95,7 @@ def main():
             if data[-1] != "dll":
                 self.RunService(RUN_FILE, ENV_EXTENSION)
             elif  ENV_EXTENSION == "none":
+                print("Running dotnet 1")
                 os.system("dotnet " + RUN_FILE + " --urls=" + URLS + self.SERVICE_PORT +\
                     " --\'$STORAGE_ROOT\'=" + APP_STORAGE_ROOT +\
                         " --pathToConf=" + self.PATH_TO_CONF +\
@@ -96,6 +105,7 @@ def main():
                                         " core:products:subfolder=server" + " " +\
                                             CORE_EVENT_BUS)
             else:
+                print("Running dotnet 2")
                 os.system("dotnet " + RUN_FILE + " --urls=" + URLS + self.SERVICE_PORT +\
                     " --\'$STORAGE_ROOT\'=" + APP_STORAGE_ROOT +\
                         " --pathToConf=" + self.PATH_TO_CONF +\
