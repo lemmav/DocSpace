@@ -4,10 +4,6 @@ from os import environ
 from multipledispatch import dispatch
 from netaddr import *
 
-filePath = None
-saveFilePath = None
-jsonValue = None
-
 PRODUCT = os.environ["PRODUCT"] if environ.get("PRODUCT") else "onlyoffice"
 BASE_DIR =  os.environ["BASE_DIR"] if environ.get("BASE_DIR") else  "/app/" + PRODUCT
 ENV_EXTENSION = os.environ["ENV_EXTENSION"] if environ.get("ENV_EXTENSION") else "none"
@@ -58,11 +54,8 @@ RABBIT_PORT =  os.environ["RABBIT_PORT"] if environ.get("RABBIT_PORT") else "567
 RABBIT_VIRTUAL_HOST = os.environ["RABBIT_VIRTUAL_HOST"] if environ.get("RABBIT_VIRTUAL_HOST") else "/"
 RABBIT_URI = {"Uri": os.environ["RABBIT_URI"]} if environ.get("RABBIT_URI") else None
 
-def main():
-    global filePath
-    global saveFilePath
-    global jsonValue
-    
+def main(filePath, saveFilePath, jsonValue):
+
     class RunServices:
         def __init__(self, SERVICE_PORT, PATH_TO_CONF):
             self.SERVICE_PORT = SERVICE_PORT
@@ -241,7 +234,7 @@ if len(args) == 0:
 else:
     function_name = args[0]
     if function_name == 'main':
-        main()
+        main(None,None,None)
     else:
         print("Неверное имя функции")
 
