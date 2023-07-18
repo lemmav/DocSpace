@@ -59,6 +59,10 @@ RABBIT_VIRTUAL_HOST = os.environ["RABBIT_VIRTUAL_HOST"] if environ.get("RABBIT_V
 RABBIT_URI = {"Uri": os.environ["RABBIT_URI"]} if environ.get("RABBIT_URI") else None
 
 def main():
+    global filePath
+    global saveFilePath
+    global jsonValue
+    
     class RunServices:
         def __init__(self, SERVICE_PORT, PATH_TO_CONF):
             self.SERVICE_PORT = SERVICE_PORT
