@@ -92,7 +92,7 @@ COPY --from=base --chown=onlyoffice:onlyoffice /app/onlyoffice/config/* /app/onl
         
 #USER onlyoffice
 EXPOSE 5050
-ENTRYPOINT ["python3", "docker-entrypoint.py"]
+ENTRYPOINT ["python3", "docker-entrypoint.py", "main"]
 
 FROM node:18.12.1-slim as noderun
 ARG BUILD_PATH
@@ -120,7 +120,7 @@ RUN mkdir -p /var/log/onlyoffice && \
 COPY --from=base --chown=onlyoffice:onlyoffice /app/onlyoffice/config/* /app/onlyoffice/config/
 
 EXPOSE 5050
-ENTRYPOINT ["python3", "docker-entrypoint.py"]
+ENTRYPOINT ["python3", "docker-entrypoint.py", "main"]
 
 ## Nginx image ##
 FROM nginx AS proxy
