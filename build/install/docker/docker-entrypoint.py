@@ -1,8 +1,9 @@
-import json, sys, os, netifaces
+import json, sys, os, netifaces, re, subprocess
 from jsonpath_ng import jsonpath, parse
 from os import environ
 from multipledispatch import dispatch
 from netaddr import *
+
 
 def main():
 
@@ -242,15 +243,94 @@ def main():
     run = RunServices(SERVICE_PORT, PATH_TO_CONF)
     run.RunService(RUN_FILE, ENV_EXTENSION, LOG_FILE)
 
+def migration():
+    MYSQL_HOST = os.environ.get("MYSQL_HOST", "localhost")
+    MYSQL_DATABASE = os.environ.get("MYSQL_DATABASE", "onlyoffice")
+    MYSQL_USER = os.environ.get("MYSQL_USER", "onlyoffice_user")
+    MYSQL_PASSWORD = os.environ.get("MYSQL_PASSWORD", "onlyoffice_pass")
+    MIGRATION_TYPE = os.environ.get("MIGRATION_TYPE", "STANDALONE")
+    PARAMETERS = "standalone=true"
+
+    # Обновляем значение в файле appsettings.runner.json
+    connection_string = f"Server={MYSQL_HOST};Database={MYSQL_DATABASE};User ID={MYSQL_USER};Password={MYSQL_PASSWORD}"
+    with open("./appsettings.runner.json", "r") as file:
+        data = file.read()
+
+    data = re.sub(r"\"ConnectionString\".*", f"\"ConnectionString\": \"{connection_string}\",", data)
+
+    with open("./appsettings.runner.json", "w") as file:
+        file.write(data)
+
+    # Проверяем тип миграции
+    if MIGRATION_TYPE == "SAAS":
+        PARAMETERS = ""
+
+    # Запускаем приложение с помощью dotnet
+    command = f"dotnet ASC.Migration.Runner.dll {PARAMETERS}"
+    subprocess.run(command, shell=True)
+
+def healthchecks():
+
+
+    RUN_DLL = sys.argv[2]
+    NAME_SERVICE = sys.argv[3]
+
+    print(f"Executing -- {NAME_SERVICE}")
+
+    PRODUCT = os.environ.get("PRODUCT", "onlyoffice")
+    CONTAINER_PREFIX = f"{PRODUCT}-"
+    SERVICE_PORT = os.environ.get("SERVICE_PORT", "5050")
+    SHEME = os.environ.get("SHEME", "http")
+    URLS = os.environ.get("URLS", f"{SHEME}://0.0.0.0:{SERVICE_PORT}")
+    PATH_TO_CONF = os.environ.get("/var/www/services/ASC.Web.HealthChecks.UI/service")
+
+    API_SYSTEM_HOST = os.environ.get("API_SYSTEM_HOST", f"{CONTAINER_PREFIX}api-system:{SERVICE_PORT}")
+    BACKUP_HOST = os.environ.get("BACKUP_HOST", f"{CONTAINER_PREFIX}backup:{SERVICE_PORT}")
+    BACKUP_BACKGRUOND_TASKS_HOST = os.environ.get("BACKUP_BACKGRUOND_TASKS_HOST", f"{CONTAINER_PREFIX}backup-background-tasks:{SERVICE_PORT}")
+    CLEAR_EVENTS_HOST = os.environ.get("CLEAR_EVENTS_HOST", f"{CONTAINER_PREFIX}clear-events:{SERVICE_PORT}")
+    FILES_HOST = os.environ.get("FILES_HOST", f"{CONTAINER_PREFIX}files:{SERVICE_PORT}")
+    FILES_SERVICES_HOST = os.environ.get("FILES_SERVICES_HOST", f"{CONTAINER_PREFIX}files-services:{SERVICE_PORT}")
+    NOTIFY_HOST = os.environ.get("NOTIFY_HOST", f"{CONTAINER_PREFIX}notify:{SERVICE_PORT}")
+    PEOPLE_SERVER_HOST = os.environ.get("PEOPLE_SERVER_HOST", f"{CONTAINER_PREFIX}people-server:{SERVICE_PORT}")
+    STUDIO_NOTIFY_HOST = os.environ.get("STUDIO_NOTIFY_HOST", f"{CONTAINER_PREFIX}studio-notify:{SERVICE_PORT}")
+    API_HOST = os.environ.get("API_HOST", f"{CONTAINER_PREFIX}api:{SERVICE_PORT}")
+    STUDIO_HOST = os.environ.get("STUDIO_HOST", f"{CONTAINER_PREFIX}studio:{SERVICE_PORT}")
+
+    with open(f"{PATH_TO_CONF}/appsettings.json", "r") as f:
+        appsettings_content = f.read()
+
+    appsettings_content = appsettings_content.replace("localhost:5010", API_SYSTEM_HOST)
+    appsettings_content = appsettings_content.replace("localhost:5012", BACKUP_HOST)
+    appsettings_content = appsettings_content.replace("localhost:5032", BACKUP_BACKGRUOND_TASKS_HOST)
+    appsettings_content = appsettings_content.replace("localhost:5027", CLEAR_EVENTS_HOST)
+    appsettings_content = appsettings_content.replace("localhost:5007", FILES_HOST)
+    appsettings_content = appsettings_content.replace("localhost:5009", FILES_SERVICES_HOST)
+    appsettings_content = appsettings_content.replace("localhost:5005", NOTIFY_HOST)
+    appsettings_content = appsettings_content.replace("localhost:5004", PEOPLE_SERVER_HOST)
+    appsettings_content = appsettings_content.replace("localhost:5000", API_HOST)
+    appsettings_content = appsettings_content.replace("localhost:5006", STUDIO_NOTIFY_HOST)
+    appsettings_content = appsettings_content.replace("localhost:5003", STUDIO_HOST)
+
+    with open(f"{PATH_TO_CONF}/appsettings.json", "w") as f:
+        f.write(appsettings_content)
+
+    os.system(f"dotnet {RUN_DLL} --urls={URLS}")
+
+
+
 
 args = sys.argv[1:]
 
 if len(args) == 0:
-    print("Необходимо указать имя функции в аргументах командной строки")
+    print("You must specify the function name in the command line arguments")
 else:
     function_name = args[0]
     if function_name == 'main':
         main()
+    elif function_name=='healthchecks':
+        healthchecks()
+    elif function_name=='migration':
+        migration()
     else:
-        print("Неверное имя функции")
+        print("Wrong func name")
 
