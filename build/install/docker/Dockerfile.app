@@ -304,10 +304,11 @@ CMD ["ASC.Web.Studio.dll", "ASC.Web.Studio"]
 FROM dotnetrun AS healthchecks
 WORKDIR ${BUILD_PATH}/services/ASC.Web.HealthChecks.UI/service
 
-COPY --chown=onlyoffice:onlyoffice docker-healthchecks-entrypoint.sh ./docker-healthchecks-entrypoint.sh
+
+COPY --chown=onlyoffice:onlyoffice docker-entrypoint.py ./docker-entrypoint.py
 COPY --from=base --chown=onlyoffice:onlyoffice ${BUILD_PATH}/services/ASC.Web.HealthChecks.UI/service/ .
 
-ENTRYPOINT ["./docker-healthchecks-entrypoint.sh"]
+ENTRYPOINT ["python3", "docker-entrypoint.py", "healthchecks"]
 CMD ["ASC.Web.HealthChecks.UI.dll", "ASC.Web.HealthChecks.UI"]
 
 ## ASC.Migration.Runner ##
@@ -317,10 +318,10 @@ ARG SRC_PATH
 ENV BUILD_PATH=${BUILD_PATH}
 ENV SRC_PATH=${SRC_PATH}
 WORKDIR ${BUILD_PATH}/services/ASC.Migration.Runner/
-COPY  ./docker-migration-entrypoint.sh ./docker-migration-entrypoint.sh
+COPY  ./docker-entrypoint.py ./docker-entrypoint.py
 COPY --from=base ${SRC_PATH}/ASC.Migration.Runner/service/ .
 
-ENTRYPOINT ["./docker-migration-entrypoint.sh"]
+ENTRYPOINT ["python3", "docker-entrypoint.py", "migration"]
 
 ## image for k8s bin-share ##
 FROM busybox:latest AS bin_share
