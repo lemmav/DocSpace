@@ -20,6 +20,7 @@ def main():
     PATH_TO_CONF = os.environ["PATH_TO_CONF"] if environ.get("PATH_TO_CONF") else "/app/" + PRODUCT + "/config"
     LOG_DIR = os.environ["LOG_DIR"] if environ.get("LOG_DIR") else "/var/log/" + PRODUCT
     ROUTER_HOST = os.environ["ROUTER_HOST"] if environ.get("ROUTER_HOST") else "localhost"
+    SOCKET_HOST = os.environ["SOCKET_HOST"] if environ.get("SOCKET_HOST") else "onlyoffice-socket"
 
     MYSQL_HOST = os.environ["MYSQL_HOST"] if environ.get("MYSQL_HOST") else "localhost"
     MYSQL_DATABASE = os.environ["MYSQL_DATABASE"] if environ.get("MYSQL_DATABASE") else "onlyoffice"
@@ -161,7 +162,7 @@ def main():
     "$.core.machinekey": APP_CORE_MACHINEKEY,
     "$.core.products.subfolder": "server",
     "$.core.notify.postman": "services",
-    "$.web.hub.internal": "http://onlyoffice-socket:"+SERVICE_PORT+"/",
+    "$.web.hub.internal": "http://" + SOCKET_HOST + ":" + SERVICE_PORT + "/",
     "$.files.docservice.url.portal": APP_URL_PORTAL,
     "$.files.docservice.url.public": DOCUMENT_SERVER_URL_PUBLIC,
     "$.files.docservice.url.internal": DOCUMENT_SERVER_URL_INTERNAL,
