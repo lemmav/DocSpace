@@ -303,7 +303,12 @@ CMD ["ASC.Web.Studio.dll", "ASC.Web.Studio"]
 ## ASC.Web.HealthChecks.UI ##
 FROM dotnetrun AS healthchecks
 WORKDIR ${BUILD_PATH}/services/ASC.Web.HealthChecks.UI/service
-
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.5 \
+    python3-pip \
+    && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY --chown=onlyoffice:onlyoffice docker-entrypoint.py ./docker-entrypoint.py
 COPY --from=base --chown=onlyoffice:onlyoffice ${BUILD_PATH}/services/ASC.Web.HealthChecks.UI/service/ .
@@ -320,7 +325,12 @@ ENV SRC_PATH=${SRC_PATH}
 WORKDIR ${BUILD_PATH}/services/ASC.Migration.Runner/
 COPY  ./docker-entrypoint.py ./docker-entrypoint.py
 COPY --from=base ${SRC_PATH}/ASC.Migration.Runner/service/ .
-
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.5 \
+    python3-pip \
+    && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* 
 ENTRYPOINT ["python3", "docker-entrypoint.py", "migration"]
 
 ## image for k8s bin-share ##
