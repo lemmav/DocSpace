@@ -257,7 +257,7 @@ def migration():
     with open("./appsettings.runner.json", "r") as file:
         data = file.read()
 
-    data = re.sub(r"\"ConnectionString\".*", f"\"ConnectionString\": \"{connection_string}\",", data)
+    data = re.sub("\"ConnectionString\".*", f"\"ConnectionString\": \"{connection_string}\",", data)
 
     with open("./appsettings.runner.json", "w") as file:
         file.write(data)
