@@ -318,10 +318,10 @@ ARG SRC_PATH
 ENV BUILD_PATH=${BUILD_PATH}
 ENV SRC_PATH=${SRC_PATH}
 WORKDIR ${BUILD_PATH}/services/ASC.Migration.Runner/
-COPY  ./docker-entrypoint.py ./docker-entrypoint.py
+COPY  ./docker-migration-entrypoint.sh ./docker-migration-entrypoint.sh
 COPY --from=base ${SRC_PATH}/ASC.Migration.Runner/service/ .
-RUN apt-get update -y && apt-get install python3 -y
-ENTRYPOINT ["python3", "docker-entrypoint.py", "migration"]
+
+ENTRYPOINT ["./docker-migration-entrypoint.sh"]
 
 ## image for k8s bin-share ##
 FROM busybox:latest AS bin_share
