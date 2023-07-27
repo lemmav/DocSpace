@@ -20,6 +20,8 @@ def main():
     PATH_TO_CONF = os.environ["PATH_TO_CONF"] if environ.get("PATH_TO_CONF") else "/app/" + PRODUCT + "/config"
     LOG_DIR = os.environ["LOG_DIR"] if environ.get("LOG_DIR") else "/var/log/" + PRODUCT
     ROUTER_HOST = os.environ["ROUTER_HOST"] if environ.get("ROUTER_HOST") else "localhost"
+    SOCKET_HOST = os.environ["SOCKET_HOST"] if environ.get("SOCKET_HOST") else "onlyoffice-socket"
+
 
     MYSQL_HOST = os.environ["MYSQL_HOST"] if environ.get("MYSQL_HOST") else "localhost"
     MYSQL_DATABASE = os.environ["MYSQL_DATABASE"] if environ.get("MYSQL_DATABASE") else "onlyoffice"
@@ -30,9 +32,13 @@ def main():
     APP_CORE_MACHINEKEY = os.environ["APP_CORE_MACHINEKEY"] if environ.get("APP_CORE_MACHINEKEY") else "your_core_machinekey"
     INSTALLATION_TYPE = os.environ["INSTALLATION_TYPE"].upper() if environ.get("INSTALLATION_TYPE") else "ENTERPRISE"
     APP_URL_PORTAL = os.environ["APP_URL_PORTAL"] if environ.get("APP_URL_PORTAL") else "http://" + ROUTER_HOST + ":8092"
+    OAUTH_REDIRECT_URL = os.environ["OAUTH_REDIRECT_URL"] if environ.get("OAUTH_REDIRECT_URL") else "https://service.onlyoffice.com/oauth2.aspx"
     APP_STORAGE_ROOT = os.environ["APP_STORAGE_ROOT"] if environ.get("APP_STORAGE_ROOT") else BASE_DIR + "/data/"
     APP_KNOWN_PROXIES = os.environ["APP_KNOWN_PROXIES"] if environ.get("APP_KNOWN_PROXIES") is not None else "42"
     APP_KNOWN_NETWORKS = os.environ["APP_KNOWN_NETWORKS"] if environ.get("APP_KNOWN_NETWORKS") is not None else "42"
+    LOG_LEVEL = os.environ["LOG_LEVEL"] if environ.get("LOG_LEVEL") else "Warning"
+    DEBUG_INFO = os.environ["DEBUG_INFO"] if environ.get("DEBUG_INFO") else "false"
+
 
     DOCUMENT_SERVER_JWT_SECRET = os.environ["DOCUMENT_SERVER_JWT_SECRET"] if environ.get("DOCUMENT_SERVER_JWT_SECRET") else "your_jwt_secret"
     DOCUMENT_SERVER_JWT_HEADER = os.environ["DOCUMENT_SERVER_JWT_HEADER"] if environ.get("DOCUMENT_SERVER_JWT_HEADER") else "AuthorizationJwt"
@@ -161,18 +167,21 @@ def main():
     "$.core.machinekey": APP_CORE_MACHINEKEY,
     "$.core.products.subfolder": "server",
     "$.core.notify.postman": "services",
-    "$.web.hub.internal": "http://onlyoffice-socket:"+SERVICE_PORT+"/",
+    "$.web.hub.internal": "http://" + SOCKET_HOST + ":" + SERVICE_PORT + "/",
     "$.files.docservice.url.portal": APP_URL_PORTAL,
     "$.files.docservice.url.public": DOCUMENT_SERVER_URL_PUBLIC,
     "$.files.docservice.url.internal": DOCUMENT_SERVER_URL_INTERNAL,
     "$.files.docservice.secret.value":  DOCUMENT_SERVER_JWT_SECRET,
-    "$.files.docservice.secret.header": DOCUMENT_SERVER_JWT_HEADER}
+    "$.files.docservice.secret.header": DOCUMENT_SERVER_JWT_HEADER,
+    "$.Logging.LogLevel.Default": LOG_LEVEL,
+    "$.debug-info.enabled": DEBUG_INFO}
 
     for key, value in parametrsForUpdate.items():
         updateJsonData(jsonData, key, value)
 
     if INSTALLATION_TYPE == "ENTERPRISE":
         updateJsonData(jsonData, "$.license.file.path", "/app/onlyoffice/data/license.lic")
+
 
     ip_address = netifaces.ifaddresses('eth0').get(netifaces.AF_INET)[0].get('addr')
     netmask = netifaces.ifaddresses('eth0').get(netifaces.AF_INET)[0].get('netmask')
@@ -197,6 +206,22 @@ def main():
     updateJsonData(jsonData, "$.ConnectionStrings.default.connectionString", "Server="+ MYSQL_HOST +";Port=3306;Database="+ MYSQL_DATABASE +";User ID="+ MYSQL_USER +";Password="+ MYSQL_PASSWORD +";Pooling=true;Character Set=utf8;AutoEnlist=false;SSL Mode=none;ConnectionReset=false;AllowPublicKeyRetrieval=true",)
     updateJsonData(jsonData,"$.core.base-domain", APP_CORE_BASE_DOMAIN)
     updateJsonData(jsonData,"$.core.machinekey", APP_CORE_MACHINEKEY)
+    writeJsonFile(filePath, jsonData)
+
+    filePath = "/app/onlyoffice/config/appsettings.services.json"
+    jsonData = openJsonFile(filePath)
+    updateJsonData(jsonData,"$.logLevel", LOG_LEVEL)
+    writeJsonFile(filePath, jsonData)
+
+    filePath = "/app/onlyoffice/config/autofac.consumers.json"
+    jsonData = openJsonFile(filePath)
+
+    for component in jsonData['components']:
+        if 'parameters' in component and 'additional' in component['parameters']:
+            for key, value in component['parameters']['additional'].items():
+                if re.search(r'.*RedirectUrl$', key) and value:
+                    component['parameters']['additional'][key] = OAUTH_REDIRECT_URL
+
     writeJsonFile(filePath, jsonData)
 
     filePath = "/app/onlyoffice/config/elastic.json"
@@ -240,10 +265,16 @@ def main():
     jsonData["Redis"].update(REDIS_PASSWORD) if REDIS_PASSWORD is not None else None
     writeJsonFile(filePath, jsonData)
 
+    filePath = "/app/onlyoffice/config/nlog.config"
+    with open(filePath, 'r') as f:
+        configData = f.read()
+    configData = re.sub(r'(minlevel=")(\w+)(")', '\\1' + LOG_LEVEL + '\\3', configData)
+    with open(filePath, 'w') as f:
+        f.write(configData)
+
     run = RunServices(SERVICE_PORT, PATH_TO_CONF)
     run.RunService(RUN_FILE, ENV_EXTENSION, LOG_FILE)
-
-def migration():
+    def migration():
     MYSQL_HOST = os.environ.get("MYSQL_HOST", "localhost")
     MYSQL_DATABASE = os.environ.get("MYSQL_DATABASE", "onlyoffice")
     MYSQL_USER = os.environ.get("MYSQL_USER", "onlyoffice_user")
