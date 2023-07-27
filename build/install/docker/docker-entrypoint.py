@@ -274,7 +274,7 @@ def main():
 
     run = RunServices(SERVICE_PORT, PATH_TO_CONF)
     run.RunService(RUN_FILE, ENV_EXTENSION, LOG_FILE)
-    def migration():
+def migration():
     MYSQL_HOST = os.environ.get("MYSQL_HOST", "localhost")
     MYSQL_DATABASE = os.environ.get("MYSQL_DATABASE", "onlyoffice")
     MYSQL_USER = os.environ.get("MYSQL_USER", "onlyoffice_user")
