@@ -1,9 +1,8 @@
 name: 4testing multiarch-build
 
 on:
-  push:
-    branches: 
-      - 'feature/test-tag'
+  schedule:
+    - cron: '0 11 * * *'
 
 env:
     DOCKER_PATH: "/build/install/docker"
@@ -37,7 +36,7 @@ jobs:
         run: |
           cd .${DOCKER_PATH}
           TAG=${{github.run_number}}
-          export DOCKER_TAG=$(echo "${GITHUB_REF_NAME}" | sed '/^release\b\|^hotfix\b\|^feature\b/s/release.*\/\|hotfix.*\/\|feature.*\///').$TAG
+          export DOCKER_TAG=$(echo "${GITHUB_REF_NAME}" | sed '/^release\b\|^hotfix\b\|^feature\b/s/release.*\/\|hotfix.*\/\|feature.*\///')
 
           docker buildx bake -f build.yml \
           --set *.args.GIT_BRANCH=$GITHUB_REF_NAME \
