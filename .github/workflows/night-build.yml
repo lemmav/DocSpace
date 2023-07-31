@@ -2,7 +2,7 @@ name: night-build
 
 on:
   schedule:
-    - cron: '0 11 * * *'
+    - cron: '0 0 * * *'
 
 env:
     DOCKER_PATH: "/build/install/docker"
@@ -11,6 +11,7 @@ env:
     DOCKERFILE: "Dockerfile.app"
     FILE: "build.yml"
     STATUS: ""
+    
 
 
 jobs:
@@ -20,8 +21,17 @@ jobs:
       matrix:
         platform: [linux/amd64]
     steps:
+      - name: Find Latest Release Branch
+        id: release-branch-finder
+        uses: jsryudev/release-branch-finder@v0.1.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          release-branch-prefix: release
+     
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          ref: ${{ steps.release-branch-finder.outputs.release-branch }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -33,8 +43,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build 4testing
+      
         run: |
           cd .${DOCKER_PATH}
+          GITHUB_REF_NAME=${{ steps.release-branch-finder.outputs.release-branch }}
           TAG=${{github.run_number}}
           export DOCKER_TAG=$(echo "${GITHUB_REF_NAME}" | sed '/^release\b\|^hotfix\b\|^feature\b/s/release.*\/\|hotfix.*\/\|feature.*\///')
 
@@ -44,3 +56,4 @@ jobs:
           --push
 
         shell: bash
+      
