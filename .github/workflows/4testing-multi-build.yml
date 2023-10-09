@@ -8,7 +8,7 @@ on:
       - 'feature/v*-git-action'
 
 env:
-  DOCKER_PATH: "buildtools/install/docker" # Обновляем путь к сабмодулю
+  DOCKER_PATH: "buildtools/install/docker"
   REPO: "lemmav"
   DOCKER_IMAGE_PREFIX: "4testing-docspace"
   DOCKERFILE: "Dockerfile.app"
