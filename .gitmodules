@@ -5,7 +5,7 @@
 	update = merge
 [submodule "build"]
 	path = buildtools
-	url = ../DocSpace-buildtools.git
+	url = https://github.com/ONLYOFFICE/DocSpace-buildtools.git
 	branch = .
 	update = merge
 [submodule "server"]
